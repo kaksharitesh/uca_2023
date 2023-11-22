@@ -12,7 +12,7 @@ public class MedianFinder {
     }
 
     public void insert(int key) {
-        if (minHeap.size() == 0) {
+        if (minHeap.isEmpty()) {
             minHeap.insert(key);
             return;
         }
