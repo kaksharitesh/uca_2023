@@ -82,8 +82,8 @@ public class BST<K extends Comparable<K>, V> {
     }
 
 
-    private class Node {
-        private K k;
+    public class Node {
+        private final K k;
         private V v;
         private Node left;
         private Node right;
