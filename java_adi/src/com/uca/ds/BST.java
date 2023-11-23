@@ -73,7 +73,13 @@ public class BST<K extends Comparable<K>, V> {
     }
 
     public K getMin() {
-        return null;
+        if(root==null) return null;
+        return getMin(root).k;
+    }
+
+    public Node getMin(Node n){
+        if(n.left==null) return n;
+        return getMin(n.left);
     }
 
     public void delMin() {
@@ -90,6 +96,7 @@ public class BST<K extends Comparable<K>, V> {
     }
 
     public K getMax() {
+        if(root==null) return null;
         return getMax(root).k;
     }
     private Node getMax(Node x) {
@@ -291,6 +298,7 @@ public class BST<K extends Comparable<K>, V> {
 
     public static void main(String[] args) {
         BST<Integer, String> bst = new BST<>();
+        assert bst.isEmpty();
         bst.insert(5, "five");
         bst.insert(1, "five");
         bst.insert(2, "two");
@@ -300,12 +308,32 @@ public class BST<K extends Comparable<K>, V> {
         bst.insert(8, "eight");
         bst.topView();
         bst.inOrder();
+
+        assert 5 == bst.getFirstCommonAncestor(3,9);
+
+
         bst.delete(5);
         bst.inOrder();
         bst.insert(5, "five");
         bst.insert(10, "ten");
         bst.insert(-1, "neg one");
         bst.inOrder();
+
+        assert 10==bst.getMax();
+        assert -1 == bst.getMin();
+
+        assert !bst.isEmpty();
+
+        bst.delMin();
+        bst.delMax();
+
+        assert 9==bst.getMax();
+        assert 1 == bst.getMin();
+        assert 3 == bst.getCeling(3);
+        assert 3 == bst.getFloor(3);
+
+
+
         bst.convertToDLink();
         bst.printDLink();
 
