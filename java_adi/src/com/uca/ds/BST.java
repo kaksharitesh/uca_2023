@@ -5,6 +5,59 @@ import java.util.*;
 public class BST<K extends Comparable<K>, V> {
     private Node root;
 
+    public static void main(String[] args) {
+        BST<Integer, String> bst = new BST<>();
+        assert bst.isEmpty();
+        bst.insert(5, "five");
+        bst.insert(3, "three");
+        bst.insert(2, "two");
+        bst.insert(1, "one");
+        bst.insert(4, "four");
+        bst.insert(7, "seven");
+        bst.insert(6, "six");
+        bst.insert(8, "eight");
+        System.out.println(bst.height());
+        bst.levelOrder();
+        bst = new BST<>();
+        for (int i = 0; i < 10; i++)
+            bst.insert(i, "i");
+        System.out.println(bst.height());
+        bst.levelOrder();
+
+
+        System.exit(0);
+        bst.topView();
+        bst.inOrder();
+
+        assert 5 == bst.getFirstCommonAncestor(3, 9);
+
+
+        bst.delete(5);
+        bst.inOrder();
+        bst.insert(5, "five");
+        bst.insert(10, "ten");
+        bst.insert(-1, "neg one");
+        bst.inOrder();
+
+        assert 10 == bst.getMax();
+        assert -1 == bst.getMin();
+
+        assert !bst.isEmpty();
+
+        bst.delMin();
+        bst.delMax();
+
+        assert 9 == bst.getMax();
+        assert 1 == bst.getMin();
+        assert 3 == bst.getCeiling(3);
+        assert 3 == bst.getFloor(3);
+
+
+        bst.convertToDLink();
+        bst.printDLink();
+
+    }
+
     public void insert(K k, V v) {
         root = insert(k, v, root);
     }
@@ -49,6 +102,7 @@ public class BST<K extends Comparable<K>, V> {
     public void delete(K k) {
         root = del(root, k);
     }
+
     private Node del(Node x, K key) {
         if (x == null)
             return null;
@@ -73,12 +127,12 @@ public class BST<K extends Comparable<K>, V> {
     }
 
     public K getMin() {
-        if(root==null) return null;
+        if (root == null) return null;
         return getMin(root).k;
     }
 
-    public Node getMin(Node n){
-        if(n.left==null) return n;
+    public Node getMin(Node n) {
+        if (n.left == null) return n;
         return getMin(n.left);
     }
 
@@ -87,6 +141,7 @@ public class BST<K extends Comparable<K>, V> {
             return;
         root = delMin(root);
     }
+
     private Node delMin(Node x) {
         if (x.left == null)
             return x.right;
@@ -96,21 +151,22 @@ public class BST<K extends Comparable<K>, V> {
     }
 
     public K getMax() {
-        if(root==null) return null;
+        if (root == null) return null;
         return getMax(root).k;
     }
+
     private Node getMax(Node x) {
         if (x.right == null)
             return x;
         return getMax(x.right);
     }
 
-
     public void delMax() {
         if (root == null)
             return;
         root = delMax(root);
     }
+
     private Node delMax(Node x) {
         if (x.right == null)
             return x.left;
@@ -125,28 +181,28 @@ public class BST<K extends Comparable<K>, V> {
     }
 
     public int rank(K k, Node n) {
-        if(n==null) return -1; //dead code
+        if (n == null) return -1; //dead code
         int cmp = k.compareTo(n.k);
-        if(cmp == 0) return sizeOf(n.left);
-        if(cmp <0) return rank(k, n.left);
+        if (cmp == 0) return sizeOf(n.left);
+        if (cmp < 0) return rank(k, n.left);
         return 1 + sizeOf(n.left) + rank(k, n.right);
     }
 
-    public K getCeling(K key) {
-        Node t = getCeling(root, key);
+    public K getCeiling(K key) {
+        Node t = getCeiling(root, key);
         return t == null ? null : t.k;
     }
 
-    private Node getCeling(Node x, K key) {
+    private Node getCeiling(Node x, K key) {
         if (x == null)
             return null;
         int cmp = key.compareTo(x.k);
         if (cmp == 0)
             return x;
         else if (cmp > 0)
-            return getCeling(x.right, key);
+            return getCeiling(x.right, key);
 
-        Node t = getCeling(x.left, key);
+        Node t = getCeiling(x.left, key);
         return t == null ? x : t;
     }
 
@@ -168,23 +224,13 @@ public class BST<K extends Comparable<K>, V> {
         return t == null ? x : t;
     }
 
+    public int height() {
+        return height(root);
+    }
 
-
-    public class Node {
-        private final K k;
-        private V v;
-        private Node left;
-        private Node right;
-
-        private int c;
-
-        public Node(K k, V v) {
-            this.k = k;
-            this.v = v;
-            this.left = null;
-            this.right = null;
-            this.c = 1;
-        }
+    private int height(Node n) {
+        if (n == null) return 0;
+        return 1 + Math.max(height(n.left), height(n.right));
     }
 
     public K getFirstCommonAncestor(K k1, K k2) {
@@ -230,16 +276,6 @@ public class BST<K extends Comparable<K>, V> {
 
     }
 
-    private class NodeData {
-        Node node;
-        int d;
-
-        public NodeData(Node node, int d) {
-            this.node = node;
-            this.d = d;
-        }
-    }
-
     public void convertToDLink() {
         List<Node> ends = convertToDLink(root);
         if (ends.get(1) != null) {
@@ -283,10 +319,12 @@ public class BST<K extends Comparable<K>, V> {
             t = t.right;
         }
     }
+
     public void inOrder() {
         inOrder(root);
         System.out.println();
     }
+
     private void inOrder(Node x) {
         if (x == null)
             return;
@@ -295,48 +333,58 @@ public class BST<K extends Comparable<K>, V> {
         inOrder(x.right);
     }
 
+    private void levelOrder() {
+        System.out.println("****** level order *********");
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        q.add(null);
+        while (!q.isEmpty()) {
+            Node t = q.poll();
+            if (t == null) {
+                System.out.println();
+                if (!q.isEmpty())
+                    q.add(null);
+                continue;
+            }
+            System.out.print(t.k + "\t");
+            if (t.left != null)
+                q.add(t.left);
+            if (t.right != null)
+                q.add(t.right);
+        }
+        System.out.println("*************");
+    }
 
-    public static void main(String[] args) {
-        BST<Integer, String> bst = new BST<>();
-        assert bst.isEmpty();
-        bst.insert(5, "five");
-        bst.insert(1, "five");
-        bst.insert(2, "two");
-        bst.insert(3, "three");
-        bst.insert(4, "five");
-        bst.insert(9, "nine");
-        bst.insert(8, "eight");
-        bst.topView();
-        bst.inOrder();
+    public class Node {
+        private final K k;
+        private V v;
+        private Node left;
+        private Node right;
 
-        assert 5 == bst.getFirstCommonAncestor(3,9);
+        private int c;
 
+        public Node(K k, V v) {
+            this.k = k;
+            this.v = v;
+            this.left = null;
+            this.right = null;
+            this.c = 1;
+        }
 
-        bst.delete(5);
-        bst.inOrder();
-        bst.insert(5, "five");
-        bst.insert(10, "ten");
-        bst.insert(-1, "neg one");
-        bst.inOrder();
+        @Override
+        public String toString() {
+            return k.toString();
+        }
+    }
 
-        assert 10==bst.getMax();
-        assert -1 == bst.getMin();
+    private class NodeData {
+        Node node;
+        int d;
 
-        assert !bst.isEmpty();
-
-        bst.delMin();
-        bst.delMax();
-
-        assert 9==bst.getMax();
-        assert 1 == bst.getMin();
-        assert 3 == bst.getCeling(3);
-        assert 3 == bst.getFloor(3);
-
-
-
-        bst.convertToDLink();
-        bst.printDLink();
-
+        public NodeData(Node node, int d) {
+            this.node = node;
+            this.d = d;
+        }
     }
 
 
