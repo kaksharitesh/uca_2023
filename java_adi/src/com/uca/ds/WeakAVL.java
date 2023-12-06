@@ -3,126 +3,92 @@ package com.uca.ds;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class RedBlackTree<K extends Comparable<K>, V> {
-    private static final boolean RED = false;
-    private static final boolean BLACK = true;
+public class WeakAVL {
+
     private Node root;
 
     public static void main(String[] args) {
-        RedBlackTree<Integer, String> tree = new RedBlackTree<>();
-        for (int i = 0; i < 10; i++)
-            tree.insert(i, "No:" + i);
+        WeakAVL tree = new WeakAVL();
+        for (int i = 0; i < 510; i++) {
+            tree.insert(i, i);
+        }
         System.out.println(tree.height());
-        for (int i = 0; i < 10; i++)
-            System.out.println(tree.get(i));
-        System.out.println(tree.get(10));
-        System.out.println(tree.size());
-        tree.print();
+        //tree.printTree();
     }
 
-    public void print() {
-        System.out.println("*******************");
+    private void printTree(){
         Queue<Node> q = new LinkedList<>();
         q.add(root);
         q.add(null);
-        while (!q.isEmpty()) {
+        while(!q.isEmpty()){
             Node t = q.poll();
-            if (t == null) {
+            if(t==null){
                 System.out.println();
-                if(!q.isEmpty())
+                if(!q.isEmpty()){
                     q.add(null);
-            } else {
-                System.out.print(t.k + "\t");
-                if (t.left != null)
-                    q.add(t.left);
-                if (t.right != null)
-                    q.add(t.right);
+                }
+            }else{
+                System.out.print(t.key+"("+height(t)+")  ");
+                if(t.left!=null) q.add(t.left);
+                if(t.right!=null) q.add(t.right);
             }
         }
     }
 
-    private V get(K k) {
-        Node t = get(root, k);
-        return t == null ? null : t.v;
-    }
-
-    public Node get(Node n, K k) {
-        if (n == null) return null;
-        int cmp = k.compareTo(n.k);
-        if (cmp > 0)
-            return get(n.right, k);
-        if (cmp < 0) return get(n.left, k);
-        return n;
-
-    }
-
-    public void insert(K k, V v) {
+    public void insert(int k, int v) {
         root = insert(k, v, root);
-        root.color = BLACK;
     }
 
-    private Node insert(K k, V v, Node n) {
+    private Node insert(int k, int v, Node n) {
         if (n == null) return new Node(k, v);
-        int cmp = k.compareTo(n.k);
-        if (cmp == 0) {
-            n.v = v;   //update query
-        } else if (cmp > 0) {
+
+        if (k == n.key) {
+            n.data = v;   //update query
+        } else if (k > n.key) {
             n.right = insert(k, v, n.right);
         } else {
             n.left = insert(k, v, n.left);
         }
-        if (getColor(n.left) == BLACK && getColor(n.right) == RED) {
-            n = leftRotate(n);
-        }
-        if (getColor(n.left) == RED && getColor(n.left.left) == RED) {
+        n.h = 1 + Math.max(height(n.left), height(n.right));
+
+        int balance = balance(n);
+        if (balance > 1) {
+            if (balance(n.left) < 0) {
+                n.right = leftRotate(n.right);
+            }
             n = rightRotate(n);
         }
-        if (getColor(n.left) == RED && getColor(n.right) == RED) {
-            n = flipColor(n);
+        if (balance < -1) {
+            if (balance(n.right) > 0) {
+                n.right = rightRotate(n.right);
+            }
+            n = leftRotate(n);
         }
-        n.N = 1 + sizeOf(n.left) + sizeOf(n.right);
+
         return n;
-    }
-
-    private Node flipColor(Node n) {
-        n.left.color = BLACK;
-        n.right.color = BLACK;
-        n.color = RED;
-        return n;
-    }
-
-    private int sizeOf(Node n) {
-        return n == null ? 0 : n.N;
-    }
-
-    public int size() {
-        return sizeOf(root);
-    }
-
-    private Node leftRotate(Node n) {
-        Node t = n.right;
-        n.right = t.left;
-        t.left = n;
-        t.color = n.color;
-        n.color = RED;
-        t.N = n.N;
-        n.N = 1 + sizeOf(n.left) + sizeOf(n.right);
-        return t;
     }
 
     private Node rightRotate(Node n) {
         Node t = n.left;
         n.left = t.right;
         t.right = n;
-        t.color = n.color;
-        n.color = RED;
-        t.N = n.N;
-        n.N = 1 + sizeOf(n.left) + sizeOf(n.right);
+        n.h = 1  + Math.max(height(n.left), height(n.right));
+        t.h = 1  + Math.max(height(t.left), height(t.right));
         return t;
     }
 
-    private boolean getColor(Node n) {
-        return n == null ? BLACK : n.color;
+    private Node leftRotate(Node n) {
+        Node t = n.right;
+        n.right = t.left;
+        t.left = n;
+        n.h = 1  + Math.max(height(n.left), height(n.right));
+        t.h = 1  + Math.max(height(t.left), height(t.right));
+        return t;
+    }
+
+
+    private int balance(Node n) {
+        return height(n.left) - height(n.right);
     }
 
     public int height() {
@@ -131,28 +97,30 @@ public class RedBlackTree<K extends Comparable<K>, V> {
 
     private int height(Node n) {
         if (n == null) return 0;
-        return 1 + Math.max(height(n.left), height(n.right));
+        return n.h;
     }
 
-    public class Node {
-        private final K k;
-        private V v;
+    private static class Node {
+        private final int key;
+        private int data;
         private Node left;
         private Node right;
 
-        private boolean color;
+        private int h;
 
-        private int N;
-
-
-        public Node(K k, V v) {
-            this.k = k;
-            this.v = v;
+        public Node(int k, int v) {
+            this.key = k;
+            this.data = v;
             this.left = null;
             this.right = null;
-            this.color = RED;
-            this.N = 1;
+            this.h = 1;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(key);
         }
     }
+
 
 }
