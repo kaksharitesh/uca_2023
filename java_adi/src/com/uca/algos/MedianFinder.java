@@ -46,4 +46,8 @@ public class MedianFinder {
     public String toString() {
         return "max heap :" + maxHeap + "\n" + "min heap : " + minHeap;
     }
+
+    public static void main(String[] args) {
+        System.out.println("hello");
+    }
 }
