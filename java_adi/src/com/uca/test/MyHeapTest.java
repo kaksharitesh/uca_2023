@@ -1,7 +1,7 @@
 package com.uca.test;
 
 import com.uca.algos.MedianFinder;
-import com.uca.ds.MyHeap;
+import com.uca.ds.heap.MyHeap;
 
 import java.util.*;
 

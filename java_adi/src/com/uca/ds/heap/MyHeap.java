@@ -1,4 +1,4 @@
-package com.uca.ds;
+package com.uca.ds.heap;
 
 public class MyHeap {
     private final int[] a;

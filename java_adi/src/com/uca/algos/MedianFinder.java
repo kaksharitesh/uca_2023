@@ -1,6 +1,6 @@
 package com.uca.algos;
 
-import com.uca.ds.MyHeap;
+import com.uca.ds.heap.MyHeap;
 
 public class MedianFinder {
     private final MyHeap minHeap;
