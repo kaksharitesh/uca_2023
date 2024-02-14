@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class WPCQuickUnion extends WeightedQuickUnion {
     //weighted quick union with path compression
-    protected WPCQuickUnion(int n) {
+    public WPCQuickUnion(int n) {
         super(n);
     }
 
